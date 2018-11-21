@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: dsproxy-r2dbc-sleuth
+  sleuth:
+    sampler:
+      probability: 1.0
