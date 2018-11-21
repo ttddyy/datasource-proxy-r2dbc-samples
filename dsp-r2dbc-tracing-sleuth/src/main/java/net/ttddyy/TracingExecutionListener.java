@@ -2,6 +2,7 @@ package net.ttddyy;
 
 import brave.Span;
 import brave.Tracer;
+import net.ttddyy.dsproxy.r2dbc.core.ConnectionInfo;
 import net.ttddyy.dsproxy.r2dbc.core.ExecutionType;
 import net.ttddyy.dsproxy.r2dbc.core.MethodExecutionInfo;
 import net.ttddyy.dsproxy.r2dbc.core.QueryExecutionInfo;
@@ -29,6 +30,9 @@ public class TracingExecutionListener implements LifeCycleListener {
     private static final String TAG_QUERY_SUCCESS = "success";
     private static final String TAG_QUERY_RESULT_COUNT = "resultCount";
     private static final String TAG_TRANSACTION_SAVEPOINT = "savepoint";
+    private static final String TAG_TRANSACTION_COUNT = "transactionCount";
+    private static final String TAG_COMMIT_COUNT = "commitCount";
+    private static final String TAG_ROLLBACK_COUNT = "rollbackCount";
 
     private Tracer tracer;
     private Map<String, Span> connectionSpans = new ConcurrentHashMap<>();
@@ -73,7 +77,8 @@ public class TracingExecutionListener implements LifeCycleListener {
 
     @Override
     public void afterCloseOnConnection(MethodExecutionInfo methodExecutionInfo) {
-        String connectionId = methodExecutionInfo.getConnectionInfo().getConnectionId();
+        ConnectionInfo connectionInfo = methodExecutionInfo.getConnectionInfo();
+        String connectionId = connectionInfo.getConnectionId();
         Span connectionSpan = this.connectionSpans.remove(connectionId);
         if (connectionSpan == null) {
             return;    // already closed
@@ -86,6 +91,9 @@ public class TracingExecutionListener implements LifeCycleListener {
                 .tag(TAG_CONNECTION_ID, connectionId)
                 .tag(TAG_THREAD_ID, String.valueOf(methodExecutionInfo.getThreadId()))
                 .tag(TAG_THREAD_NAME, methodExecutionInfo.getThreadName())
+                .tag(TAG_TRANSACTION_COUNT, String.valueOf(connectionInfo.getTransactionCount()))
+                .tag(TAG_COMMIT_COUNT, String.valueOf(connectionInfo.getCommitCount()))
+                .tag(TAG_ROLLBACK_COUNT, String.valueOf(connectionInfo.getRollbackCount()))
                 .finish();
     }
 
@@ -174,6 +182,9 @@ public class TracingExecutionListener implements LifeCycleListener {
                     .tag(TAG_THREAD_NAME, methodExecutionInfo.getThreadName())
                     .finish();
         }
+
+        Span connectionSpan = this.connectionSpans.get(connectionId);
+        connectionSpan.annotate("Transaction commit");
     }
 
     @Override
@@ -190,6 +201,8 @@ public class TracingExecutionListener implements LifeCycleListener {
                     .finish();
         }
 
+        Span connectionSpan = this.connectionSpans.get(connectionId);
+        connectionSpan.annotate("Transaction rollback");
     }
 
     @Override
@@ -208,5 +221,7 @@ public class TracingExecutionListener implements LifeCycleListener {
                     .finish();
         }
 
+        Span connectionSpan = this.connectionSpans.get(connectionId);
+        connectionSpan.annotate("Transaction rollback to savepoint");
     }
 }
