@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.ttddyy</groupId>
-  <artifactId>dsproxy-r2dbc-sleuth</artifactId>
+  <artifactId>dsp-r2dbc-tracing-sleuth</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>dsproxy-r2dbc-sleuth</name>
+  <name>dsp-r2dbc-tracing-sleuth</name>
   <url>http://maven.apache.org</url>
 
 
@@ -22,17 +22,33 @@
     <release.version>2.5.3</release.version>
 
     <!-- Main dependency versions -->
-    <r2dbc-spi.version>1.0.0.BUILD-SNAPSHOT</r2dbc-spi.version>
     <datasource-proxy-r2dbc.version>0.1-SNAPSHOT</datasource-proxy-r2dbc.version>
     <spring-cloud-sleuth.version>2.0.2.RELEASE</spring-cloud-sleuth.version>
-    <r2dbc-client.version>1.0.0.BUILD-SNAPSHOT</r2dbc-client.version>
-    <r2dbc-h2.version>1.0.0.BUILD-SNAPSHOT</r2dbc-h2.version>
-    <r2dbc-postgresql.version>1.0.0.BUILD-SNAPSHOT</r2dbc-postgresql.version>
+    <r2dbc-client.version>1.0.0.M6</r2dbc-client.version>
+    <r2dbc-h2.version>1.0.0.M6</r2dbc-h2.version>
+    <r2dbc-postgresql.version>1.0.0.M6</r2dbc-postgresql.version>
     <postgresql.version>42.2.5</postgresql.version>
 
   </properties>
 
-
+  <repositories>
+    <repository>
+      <id>spring-snapshots</id>
+      <name>Spring Snapshots</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <build>
     <plugins>
@@ -111,7 +127,7 @@
     <dependency>
       <groupId>io.r2dbc</groupId>
       <artifactId>r2dbc-h2</artifactId>
-      <version>${r2dbc-postgresql.version}</version>
+      <version>${r2dbc-h2.version}</version>
     </dependency>
     <dependency>
       <groupId>io.r2dbc</groupId>
