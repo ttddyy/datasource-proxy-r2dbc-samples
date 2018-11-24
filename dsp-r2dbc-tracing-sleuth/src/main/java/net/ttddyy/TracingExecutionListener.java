@@ -48,11 +48,13 @@ public class TracingExecutionListener implements LifeCycleListener {
                 .kind(Span.Kind.CLIENT)
                 .start();
 
+        // store the span for retrieval at "afterCreateOnConnectionFactory"
         methodExecutionInfo.addCustomValue("connectionSpan", connectionSpan);
     }
 
     @Override
     public void afterCreateOnConnectionFactory(MethodExecutionInfo methodExecutionInfo) {
+        // retrieve the span created at "beforeCreateOnConnectionFactory"
         Span connectionSpan = methodExecutionInfo.getCustomValue("connectionSpan", Span.class);
 
         Throwable thrown = methodExecutionInfo.getThrown();
