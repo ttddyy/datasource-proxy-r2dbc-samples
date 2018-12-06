@@ -8,6 +8,9 @@
 
 * [dsp-r2dbc-tracing-sleuth](./dsp-r2dbc-tracing-sleuth)
 
+### Metrics with Micrometer (and log slow query)
+
+* [dsp-r2dbc-metrics-micrometer](./dsp-r2dbc-metrics-micrometer)
 
 ----
 
